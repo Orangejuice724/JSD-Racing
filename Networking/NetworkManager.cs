@@ -209,6 +209,7 @@ public class Player {
 	public PlayerController manager;
 	public bool isCop;
 	public int Score; //drifting :D
+    public bool isSpawned;
 
 }
 

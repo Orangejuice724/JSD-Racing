@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour {
     public Quaternion CurRot;
     public List<Level> ListOfLevels = new List<Level>();
     public bool isCop;
+    public Player MyPlayer;
 
     void Awake()
     {
