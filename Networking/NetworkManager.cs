@@ -100,40 +100,98 @@ public class NetworkManager : MonoBehaviour {
 	[RPC]
 	public void RemovePlayer(NetworkPlayer id)
 	{
+		Player temp = new Player();
+		foreach(Player pl in PlayerList)
+		{
+			if(pl.OnlinePlayer == id)
+			{
+				temp = pl;
+			}
+		}
 
+		if(temp != null)
+		{
+			PlayerList.Remove (temp);
+		}
 	}
 
 	[RPC]
 	public void RemoveAllPlayers()
 	{
-
+		foreach(Player pl in PlayerList)
+		{
+			PlayerList.Remove(pl);
+			print("Player Removed");
+			Network.Destroy(pl.manager.gameObject);
+			MasterServer.UnregisterHost();
+			Application.LoadLevel(0);
+		}
 	}
 
 	[RPC]
 	public void LoadLevel(string loadName)
 	{
+		Application.LoadLevel(loadName);
 
 	}
 
 	[RPC]
 	public Level getLevel(string LoadName, bool isStarted)
 	{
+		foreach(Level lvl in ListOfLevels)
+			{
+				if(LoadName == lvl.LoadName)
+				{
+					CurLevel = lvl;
+					return lvl;
+				}
+			}
 
+		if(isStarted)
+		{
+			LoadLevel(LoadName);
+		}
+
+		return null;
 	}
 
 	public static Player getPlayer(NetworkPlayer id)
 	{
+		foreach(Player pl in instance.PlayerList)
+		{
+			if(pl.OnlinePlayer == id)
+			{
+				return pl;
+			}
+		}
 
+		return null;
 	}
 
 	public static bool HasPlayer(string n)
 	{
+		foreach(Player pl in instance.PlayerList)
+		{
+			if(pl.PlayerName == n)
+			{
+				return true;
+			}
+		}
 
+		return false;
 	}
 
 	public static Player getPlayer(string id)
 	{
+		foreach(Player pl in instance.PlayerList)
+		{
+			if(pl.PlayerName == id)
+			{
+				return pl;
+			}
+		}
 
+		return null;
 	}
 
 	void OnGUI()
