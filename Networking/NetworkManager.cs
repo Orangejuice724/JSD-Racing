@@ -14,6 +14,7 @@ public class NetworkManager : MonoBehaviour {
 	public List<Level> ListOfLevels = new List<Level>();
 
 	public int police = 0;
+	public bool MatchStarted;
 
 	void Awake()
 	{
@@ -31,7 +32,7 @@ public class NetworkManager : MonoBehaviour {
 
 	}
 
-	public void StartServer()
+	public void StartServer(string ServerName, int MaxPlayers)
 	{
 		Network.InitializeSecurity();
 		Network.InitializeServer(MaxPlayers, 25565, true);
@@ -44,7 +45,7 @@ public class NetworkManager : MonoBehaviour {
 		foreach(Player pl in PlayerList)
 		{
 			networkView.RPC("getLevel", id, CurLevel.LoadName, MatchStarted);
-			networkView.RPC("Client_PlayerJoined", id, pl.PlayerName, Pl.OnlinePlayer);
+			networkView.RPC("Client_PlayerJoined", id, pl.PlayerName, pl.OnlinePlayer);
 		}
 	}
 
@@ -55,7 +56,7 @@ public class NetworkManager : MonoBehaviour {
 
 	void OnServerInitialized()
 	{
-		Server_PlayerJoined(PlayerName, 0, Network.player)
+		Server_PlayerJoined(PlayerName, 0, Network.player);
 	}
 
 	void OnPlayerDisconnected(NetworkPlayer id)
@@ -89,7 +90,7 @@ public class NetworkManager : MonoBehaviour {
 		temp.PlayerName = Username;
 		temp.OnlinePlayer = id;
 		PlayerList.Add(temp);
-		if(NetworkPlayer == id)
+		if(Network.player == id)
 		{
 			MyPlayer = temp;
 			GameObject LastPlayer = Network.Instantiate(SpawnPlayer, Vector3.zero, Quaternion.identity, 0) as GameObject;
