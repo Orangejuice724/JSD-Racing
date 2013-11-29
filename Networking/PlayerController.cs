@@ -73,7 +73,7 @@ public class PlayerController : MonoBehaviour {
     [RPC]
     public void Server_PlaySound(string GunName, Vector3 soundPoint)
     {
-        AudioSource.PlayClipAtPoint(WeaponManager.FindWeapon(GunName).gameObject.audio.clip, soundPoint);
+        //AudioSource.PlayClipAtPoint(WeaponManager.FindWeapon(GunName).gameObject.audio.clip, soundPoint);
     }
 
     [RPC]
