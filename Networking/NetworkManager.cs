@@ -12,6 +12,8 @@ public class NetworkManager : MonoBehaviour {
 	public GameObject SpawnPlayer;
 	public Level CurLevel;
 	public List<Level> ListOfLevels = new List<Level>();
+	
+	public List<Cars> ListOfCars = new List<Cars>();
 
 	public int police = 0;
 	public bool MatchStarted;
@@ -45,7 +47,7 @@ public class NetworkManager : MonoBehaviour {
 		foreach(Player pl in PlayerList)
 		{
 			networkView.RPC("getLevel", id, CurLevel.LoadName, MatchStarted);
-			networkView.RPC("Client_PlayerJoined", id, pl.PlayerName, pl.OnlinePlayer);
+			networkView.RPC("Client_PlayerJoined", id, pl.PlayerName, 0, pl.OnlinePlayer);
 		}
 	}
 
@@ -132,8 +134,8 @@ public class NetworkManager : MonoBehaviour {
 	[RPC]
 	public void LoadLevel(string loadName)
 	{
-		Application.LoadLevel(loadName);
-
+		MatchStarted = true;
+		Application.LoadLevel(1);
 	}
 
 	[RPC]
@@ -197,7 +199,34 @@ public class NetworkManager : MonoBehaviour {
 
 	void OnGUI()
 	{
-
+		if(MatchStarted == true && !MyPlayer.isSpawned)
+		{
+			if(GUI.Button(new Rect(Screen.width - 50, 0, 50, 20), "Spawn"))
+			{
+				MyPlayer.manager.networkView.RPC("Spawn", RPCMode.All);
+				if(Network.isServer)
+				{
+					MyPlayer.manager.clientCar.localPosition = LevelManager.instance.SpawnPoints[0].transform.position;
+					MyPlayer.manager.clientCar.localRotation = LevelManager.instance.SpawnPoints[0].transform.rotation;
+				}
+				else
+				{
+					MyPlayer.manager.clientCar.localPosition = LevelManager.instance.SpawnPoints[1].transform.position;
+					MyPlayer.manager.clientCar.localRotation = LevelManager.instance.SpawnPoints[1].transform.rotation;
+				}
+			}
+			
+			GUILayout.BeginArea(new Rect(0, 32, 128, Screen.height), "Players");
+			GUILayout.Space(20);
+			foreach(Cars car in ListOfCars)
+			{
+				GUILayout.BeginHorizontal();
+				if(GUILayout.Button(car.carName))
+					MyPlayer.manager.updateMyCar(car.carID);
+				GUILayout.EndHorizontal();
+			}
+			GUILayout.EndArea();
+		}
 	}
 
 }
@@ -220,4 +249,10 @@ public class Level {
 	public string LoadName;
 	public string PlayName;
 
+}
+
+[System.Serializable]
+public class Cars {
+	public string carName;
+	public int carID;
 }
